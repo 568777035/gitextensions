@@ -9,6 +9,7 @@ using GitExtUtils.GitUI;
 using GitUI;
 using GitUI.CommandsDialogs.SettingsDialog;
 using GitUI.CommandsDialogs.SettingsDialog.Pages;
+using GitUI.Infrastructure.Telemetry;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Threading;
 using ResourceManager;
@@ -48,6 +49,8 @@ namespace GitExtensions
                     return UserEnvironmentInformation.GetInformation();
                 };
 
+                DiagnosticsClient.Initialize(ThisAssembly.Git.IsDirty);
+
                 if (!Debugger.IsAttached)
                 {
                     AppDomain.CurrentDomain.UnhandledException += NBug.Handler.UnhandledException;
@@ -86,6 +89,9 @@ namespace GitExtensions
             }
 
             AppSettings.LoadSettings();
+
+            new AppStartDiagnosticsReporter().Report();
+
             if (EnvUtils.RunningOnWindows())
             {
                 WebBrowserEmulationMode.SetBrowserFeatureControl();

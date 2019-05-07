@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using GitCommands;
@@ -38,7 +39,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             base.OnRuntimeLoad();
 
             // align 1st columns across all tables
-            tlpnlBehaviour.AdjustWidthToSize(0, lblCommitsLimit, lblDefaultCloneDestination);
+            tlpnlBehaviour.AdjustWidthToSize(0, lblDefaultCloneDestination);
+            tlpnlTelemetry.AdjustWidthToSize(0, lblDefaultCloneDestination);
         }
 
         private void SetSubmoduleStatus()
@@ -69,6 +71,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             cbDefaultCloneDestination.Text = AppSettings.DefaultCloneDestinationPath;
             chkFollowRenamesInFileHistoryExact.Checked = AppSettings.FollowRenamesInFileHistoryExactOnly;
             SetSubmoduleStatus();
+
+            chkTelemetry.Checked = AppSettings.TelemetryEnabled;
         }
 
         protected override void PageToSettings()
@@ -92,6 +96,8 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
 
             AppSettings.DefaultCloneDestinationPath = cbDefaultCloneDestination.Text;
             AppSettings.FollowRenamesInFileHistoryExactOnly = chkFollowRenamesInFileHistoryExact.Checked;
+
+            AppSettings.TelemetryEnabled = chkTelemetry.Checked;
         }
 
         private static Func<Repository, string> GetParentPath()
@@ -126,6 +132,11 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
         private void ShowGitStatus_CheckedChanged(object sender, System.EventArgs e)
         {
             SetSubmoduleStatus();
+        }
+
+        private void LlblTelemetryPrivacyLink_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/gitextensions/gitextensions/blob/master/PrivacyPolicy.md");
         }
     }
 }

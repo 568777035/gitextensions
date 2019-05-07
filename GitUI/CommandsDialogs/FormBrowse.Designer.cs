@@ -66,6 +66,7 @@ namespace GitUI.CommandsDialogs
             this.toolStripRevisionFilterTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripRevisionFilterDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ShowFirstParent = new System.Windows.Forms.ToolStripButton();
+            this.tsbtnEnableTelemetry = new System.Windows.Forms.ToolStripButton();
             this.MainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.repoObjectsTree = new GitUI.BranchTreePanel.RepoObjectsTree();
             this.RightSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -269,7 +270,8 @@ namespace GitUI.CommandsDialogs
             this.toolStripRevisionFilterLabel,
             this.toolStripRevisionFilterTextBox,
             this.toolStripRevisionFilterDropDownButton,
-            this.ShowFirstParent});
+            this.ShowFirstParent,
+            this.tsbtnEnableTelemetry});
             this.ToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.ToolStrip.Location = new System.Drawing.Point(3, 0);
             this.ToolStrip.Name = "ToolStrip";
@@ -646,6 +648,18 @@ namespace GitUI.CommandsDialogs
             this.ShowFirstParent.Name = "ShowFirstParent";
             this.ShowFirstParent.Size = new System.Drawing.Size(23, 20);
             this.ShowFirstParent.ToolTipText = "Show first parents";
+            // 
+            // tsbtnEnableTelemetry
+            // 
+            this.tsbtnEnableTelemetry.CheckOnClick = true;
+            this.tsbtnEnableTelemetry.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbtnEnableTelemetry.Image = global::GitUI.Properties.Images.EyeOpened;
+            this.tsbtnEnableTelemetry.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbtnEnableTelemetry.Name = "tsbtnEnableTelemetry";
+            this.tsbtnEnableTelemetry.Size = new System.Drawing.Size(28, 28);
+            this.tsbtnEnableTelemetry.Text = "Telemetry capture on/off";
+            this.tsbtnEnableTelemetry.ToolTipText = "Allow to capture telemetry information on/off";
+            this.tsbtnEnableTelemetry.Click += new System.EventHandler(this.TsbtnEnableTelemetry_Click);
             // 
             // MainSplitContainer
             // 
@@ -1774,7 +1788,7 @@ namespace GitUI.CommandsDialogs
 
         #endregion
 
-        private SplitContainer MainSplitContainer;
+        internal SplitContainer MainSplitContainer;
         private SplitContainer RightSplitContainer;
         private SplitContainer RevisionsSplitContainer;
 
@@ -1942,5 +1956,6 @@ namespace GitUI.CommandsDialogs
         private ToolStripMenuItem commitInfoBelowMenuItem;
         private ToolStripMenuItem commitInfoLeftwardMenuItem;
         private ToolStripMenuItem commitInfoRightwardMenuItem;
+        private ToolStripButton tsbtnEnableTelemetry;
     }
 }

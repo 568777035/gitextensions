@@ -24,6 +24,7 @@ using GitUI.CommandsDialogs.BrowseDialog;
 using GitUI.CommandsDialogs.BrowseDialog.DashboardControl;
 using GitUI.CommandsDialogs.WorktreeDialog;
 using GitUI.Hotkey;
+using GitUI.Infrastructure.Telemetry;
 using GitUI.Properties;
 using GitUI.Script;
 using GitUI.UserControls;
@@ -98,7 +99,7 @@ namespace GitUI.CommandsDialogs
         [CanBeNull] private readonly IAheadBehindDataProvider _aheadBehindDataProvider;
         private readonly WindowsJumpListManager _windowsJumpListManager;
         private readonly SubmoduleStatusProvider _submoduleStatusProvider;
-
+        private readonly FormBrowseDiagnosticsReporter _formBrowseDiagnosticsReporter;
         [CanBeNull] private BuildReportTabPageExtension _buildReportTabPageExtension;
         private ConEmuControl _terminal;
         private Dashboard _dashboard;
@@ -130,6 +131,8 @@ namespace GitUI.CommandsDialogs
             : base(commands)
         {
             InitializeComponent();
+
+            _formBrowseDiagnosticsReporter = new FormBrowseDiagnosticsReporter(this);
 
             commandsToolStripMenuItem.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
 
@@ -506,6 +509,9 @@ namespace GitUI.CommandsDialogs
 
             toolStripButtonPush.Initialize(_aheadBehindDataProvider);
             toolStripButtonPush.DisplayAheadBehindInformation(Module.GetSelectedBranch());
+            tsbtnEnableTelemetry.Checked = AppSettings.TelemetryEnabled;
+
+            _formBrowseDiagnosticsReporter.Report();
 
             base.OnLoad(e);
         }
@@ -641,6 +647,8 @@ namespace GitUI.CommandsDialogs
             _dashboard.RefreshContent();
             _dashboard.Visible = true;
             _dashboard.BringToFront();
+
+            DiagnosticsClient.TrackPageView("Dashboard");
         }
 
         private void HideDashboard()
@@ -658,6 +666,8 @@ namespace GitUI.CommandsDialogs
             toolPanel.LeftToolStripPanelVisible = true;
             toolPanel.RightToolStripPanelVisible = true;
             toolPanel.ResumeLayout();
+
+            DiagnosticsClient.TrackPageView("Revision graph");
         }
 
         private void UpdatePluginMenu(bool validWorkingDir)
@@ -2985,12 +2995,18 @@ namespace GitUI.CommandsDialogs
         private void toggleSplitViewLayout_Click(object sender, EventArgs e)
         {
             AppSettings.ShowSplitViewLayout = !AppSettings.ShowSplitViewLayout;
+            DiagnosticsClient.TrackEvent("Layout change",
+                new Dictionary<string, string> { { nameof(AppSettings.ShowSplitViewLayout), AppSettings.ShowSplitViewLayout.ToString() } });
+
             RefreshSplitViewLayout();
         }
 
         private void toggleBranchTreePanel_Click(object sender, EventArgs e)
         {
             MainSplitContainer.Panel1Collapsed = !MainSplitContainer.Panel1Collapsed;
+            DiagnosticsClient.TrackEvent("Layout change",
+                new Dictionary<string, string> { { "ShowLeftPanel", MainSplitContainer.Panel1Collapsed.ToString() } });
+
             RefreshLayoutToggleButtonStates();
         }
 
@@ -3016,6 +3032,9 @@ namespace GitUI.CommandsDialogs
         private void SetCommitInfoPosition(CommitInfoPosition position)
         {
             AppSettings.CommitInfoPosition = position;
+            DiagnosticsClient.TrackEvent("Layout change",
+                new Dictionary<string, string> { { nameof(AppSettings.CommitInfoPosition), AppSettings.CommitInfoPosition.ToString() } });
+
             LayoutRevisionInfo();
             RefreshLayoutToggleButtonStates();
         }
@@ -3023,6 +3042,9 @@ namespace GitUI.CommandsDialogs
         private void RefreshSplitViewLayout()
         {
             RightSplitContainer.Panel2Collapsed = !AppSettings.ShowSplitViewLayout;
+            DiagnosticsClient.TrackEvent("Layout change",
+                new Dictionary<string, string> { { nameof(AppSettings.ShowSplitViewLayout), AppSettings.ShowSplitViewLayout.ToString() } });
+
             RefreshLayoutToggleButtonStates();
         }
 
@@ -3193,6 +3215,11 @@ namespace GitUI.CommandsDialogs
             {
                 e.Effect = DragDropEffects.Move;
             }
+        }
+
+        private void TsbtnEnableTelemetry_Click(object sender, EventArgs e)
+        {
+            AppSettings.TelemetryEnabled = tsbtnEnableTelemetry.Checked;
         }
     }
 }

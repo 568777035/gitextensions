@@ -90,6 +90,12 @@ namespace GitCommands
             }
         }
 
+        public static bool TelemetryEnabled
+        {
+            get => GetBool("TelemetryEnabled", true);
+            set => SetBool("TelemetryEnabled", value);
+        }
+
         public static bool AutoNormaliseBranchName
         {
             get => GetBool("AutoNormaliseBranchName", true);
